@@ -210,26 +210,26 @@ Each epoch, the loss and the SSIM scores were calculated and plotted after train
 
 After 1 epoch:
 
-![alt text](./Resources/epoch1/recon_imag_0.png "Title")
-![alt text](./Resources/epoch1/recon_imag_1.png "Title")
-![alt text](./Resources/epoch1/recon_imag_2.png "Title")
+![alt text](./Resources/train/epoch1/recon_imag_0.png "Title")
+![alt text](./Resources/train/epoch1/recon_imag_1.png "Title")
+![alt text](./Resources/train/epoch1/recon_imag_2.png "Title")
 
 After 5 epoch:
 
-![alt text](./Resources/epoch5/recon_imag_0.png "Title")
-![alt text](./Resources/epoch5/recon_imag_1.png "Title")
-![alt text](./Resources/epoch5/recon_imag_2.png "Title")
+![alt text](./Resources/train/epoch5/recon_imag_0.png "Title")
+![alt text](./Resources/train/epoch5/recon_imag_1.png "Title")
+![alt text](./Resources/train/epoch5/recon_imag_2.png "Title")
 After 10 epoch:
 
-![alt text](./Resources/epoch10/recon_imag_0.png "Title")
-![alt text](./Resources/epoch10/recon_imag_1.png "Title")
-![alt text](./Resources/epoch10/recon_imag_2.png "Title")
+![alt text](./Resources/train/epoch10/recon_imag_0.png "Title")
+![alt text](./Resources/train/epoch10/recon_imag_1.png "Title")
+![alt text](./Resources/train/epoch10/recon_imag_2.png "Title")
 
 After 20 epoch:
 
-![alt text](./Resources/epoch20/recon_imag_0.png "Title")
-![alt text](./Resources/epoch20/recon_imag_1.png "Title")
-![alt text](./Resources/epoch20/recon_imag_2.png "Title")
+![alt text](./Resources/train/epoch20/recon_imag_0.png "Title")
+![alt text](./Resources/train/epoch20/recon_imag_1.png "Title")
+![alt text](./Resources/train/epoch20/recon_imag_2.png "Title")
 
 The SSIM Scores:
 ![alt text](./Resources/train/ssim_epoch_losses.png "Title")
