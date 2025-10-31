@@ -94,11 +94,114 @@ ensure the model has not generalised to the training set and can output adequete
 be as big as the training set, leaving 10 percent of the data between them. This split was inputted into three seperate dataloaders to be used by the model.
 
 ## 4. Model Architecture
-Describe VAQVAE  
-Layers and breakdown  
-Hyperparameters  
+The VQ-VAE model consists of three main components:
+**Encoder**, **Vector Quantizer (Codebook)**, and **Decoder**.  
+Together, they learn a discrete latent representation of input data by mapping continuous encoder outputs to the nearest entries in a learned embedding space. 
+
+### Encoder
+The encoder compresses the input image into a lower dimensional latent representation. The input image passes through several convolution layers that downsample
+the image. Each layer downsamples but it increases the feature depth. The encoder outputs a continuous latent space. The layers used consist of initial convolutions
+and downsampling convolutions. The initial layers ensure the channel dimension match the necessary number of hidden channels. The downsampling channels are then used to
+reduce the image size. An input variable n_down defines the number of downsampling layers. These layers can be visualised in the table below.
+
+| Layer | Type | Output Shape | Notes |
+|--------|------|---------------|-------|
+| 1 | Conv2D (stride=1, kernal=3) + ReLU | H × W | Initial Convolution, increase channels to: in_channels -> hidden_channels // 2 |
+| 2 | Conv2D (stride=1, kernal=3) + ReLU | H × W | Increase channels to: hidden_channels // 2 -> hidden_channels |
+| 3 | Conv2D (stride=2, kernal=4) + ReLU | ↓H/2 × ↓W/2 | Downsample, reduce H and W by two |
+| ... | Conv2D (stride=2, kernal=4) + ReLU | ↓H/2 × ↓W/2 | Further downsample. Input variable n_down defines how many downsamples  |
+| Output | None | D × H' × W' | Embedding dimension |
+
+The encoder learns to capture semantic features (edges, textures, tissue structure, etc.) in the compressed latent space.
+
+### Quantizer
+The vector quantizer replaces the continuous latent vectors with discrete vector mappings. The quantizer is defined as a VectorQuantizer class in modules.py.
+The use of a codebook to represent the discrete latent vector space is what makes VQ-VAE different from a typical VAE. Within the class, the number of embeddings
+and the embedding dimensions are both defined and used to build the codebook. Torch.nn provides a simple way to initalise this:
+```
+# codebook
+self.embedding = nn.Embedding(num_embeddings, embedding_dim)
+```
+The forward function then calculates how the encoder outputs map to this codebook. For each continuous latent vector, the nearest embedding is found using Euclidean
+distance. This is done by calculating all distances and selecting the shortest. This is represented in the forward function of the VectorQuantizer class:
+```
+encoding_indices = torch.argmin(distances, dim=1)
+```
+The selected embedding replaces the encoder output, producing the quantised latent map. To ensure the embeddings accurately represent the encoder outputs, an embedding loss is used. This will try to move the codebook vectors towards the encoder outputs. The embedding loss is defined below, where z_e(x) represents the quantized vectors and the e_k is the inputs. The sg means stop gradient. This ensures back propogation does npt flow back through the outlined variable set. For the below equation the model will update itself based on the distance the codebook vectors are from the encoder outputs. Effectively bringing the defined codebook entries closer to the features that
+are outputted by the encoder:
+
+   $$\mathcal{L}_{\text{embedding}} = \| z_e(x) - \text{sg}[e_k] \|^2$$
+   
+This is represented in the code as:
+```
+embedding_loss = F.mse_loss(quantized, inputs.detach())
+```
+Additionally, a commitment loss was used. The Commitment loss ensures that the encoder outputs stay close to their chosen embeddings. This prevents any oscillatory behaviour between the mapped codebook vector and the encoder outputs. Similarly the encoder vectors now have no gradient flowing through them. This effectively updates the encoder outputs (e_k) such that it minimises this distance.
+
+   $$\mathcal{L}_{\text{commit}} = \| \text{sg}[z_e(x)] - e_k \|^2$$
+
+This is represented in the code as:
+```
+commitment_loss = F.mse_loss(quantized.detach(), inputs)
+```
+The overall quantizer error can be calculated. The commitment loss is scaled down by a variable:
+
+$$\mathcal{L}_{\text{commit}} = \mathcal{L}_{\text{embedding}} + \beta * \mathcal{L}_{\text{commitment}}$$
+
+In code:
+```
+loss = embedding_loss + self.commitment_cost * commitment_loss
+```
+
+### Decoder
+The decoder takes the output quantised latent space and reconstructs the image. Taking the latent map as input, it uses transposed convolutions or
+upsampling layers to progressively reconstruct the spatial resolution. This outputs the reconstructed image
+
+| Layer | Type | Output Shape | Notes |
+|--------|------|---------------|-------|
+| 1 | Conv (stride=1, kernal=3) | D × H' × W' | Initial Convolution |
+| 2 | ConvTranspose2D (stride=2, kernal=4) | ↑2*H × ↑2*W | Upsampling, increase H and W by two |
+| ... | ConvTranspose2D (stride=2, kernal=4) | ↑2*H × ↑2*W | Further upsampling, Input variable n_down defines how many upsamples |
+| Pre-Output | ConvTranspose2D (stride=1, kernal=3) | ↑H × ↑W | Final upsample to ensure correct number of channels |
+| Output | Activation (Tanh) | ↑H × ↑W | Final reconstruction using activation function |
+
+
+### Overall Model
+The VQ-VAE model was adapted from **REFERENCE**
+
+The overall model uses the above components with a convolution layer on either side of the quantizer to ensure channels and dimensions match:
+```
+    def forward(self, x):
+        # x: (B, C, H, W)
+        z_e = self.encoder(x)                     # (B, C_e, H_e, W_e)
+        z_e = self.pre_vq_conv(z_e)               # (B, D, H_e, W_e) where D = embedding_dim
+        quantized, vq_loss, embed_loss, commit_loss, perplexity, encoding_indices = self.vq(z_e)
+        z_q = self.post_vq_conv(quantized)        # (B, C_e, H_e, W_e)
+        x_recon = self.decoder(z_q)               # (B, C, H, W)
+```
+Where:
+```
+self.pre_vq_conv = nn.Conv2d(final_channels, embedding_dim, kernel_size=1)
+self.post_vq_conv = nn.Conv2d(embedding_dim, final_channels, kernel_size=1)
+```
 
 ## 5. Training
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Key parameters   
 Training duration, epochs, checkpoints  
 Training loss plot   
@@ -106,7 +209,7 @@ SSIM plot
 ## 6. Testing and Results
 
 ## 7. How to Run
-Install and set up environment  
+Install and set up the environment  
 Dataset setup  
 training command  
 testing command  
