@@ -87,10 +87,10 @@ The overall data has been split into distinct groups to properly train and evalu
 **Total:** 12660  
 
 This split is the standard split that is present in the keras_slices_data for the HipMRI Prostate study. This split is desirable. A large training set
-is needed to ensure the model learns the appropriate features and does not over generalise to the small data set. The percentage of 90 percent fits
-this purpose. A validate set was used while training to ensure that the model was not generalising to the training set. This means SSIM and loss 
+is needed to ensure the model learns the appropriate features and does not over overfit to the small data set. The percentage of 90 percent fits
+this purpose. A validate set was used while training to ensure that the model was not overfitting to the training set. This means SSIM and loss 
 can be plotted for the training and validate set for each epoch to appropriately monitor progress. Finally, the test set needs to be seperate again to
-ensure the model has not generalised to the training set and can output adequete results for unseen data. Both the validate and test set do not need to
+ensure the model has not overfitted to the training set and can output adequete results for unseen data. Both the validate and test set do not need to
 be as big as the training set, leaving 10 percent of the data between them. This split was inputted into three seperate dataloaders to be used by the model.
 
 ## 4. Model Architecture
@@ -186,26 +186,60 @@ self.post_vq_conv = nn.Conv2d(embedding_dim, final_channels, kernel_size=1)
 ```
 
 ## 5. Training
+The train.py file contains the code to train the model. This uses the VQVAE class in modules.py and the custom dataset from dataset.py.
 
+### Key Variables
+The VQ-VAE model was trained with the key variables:
 
+| Variable | Description | Value / Options |
+|----------|-------------|----------------|
+| `num_epochs` | Total number of training epochs | 20 |
+| `batch_size` | Number of images per batch | 32 |
+| `learning_rate` | Initial learning rate for optimizer | 1e-3 |
+| `hidden_channels` | Base number of feature channels in encoder/decoder | 128 |
+| `embedding_dim` | Dimension of the codebook embeddings | 128 |
+| `num_embeddings` | Number of embeddings in the codebook | 512 |
+| `beta` | Weight for the commitment loss in VQ-VAE | 0.25 |
+| `n_down` | Number of down sampling layers | 4 |
 
+### Training Process
+After data preperation described above, the images were passed through to the model in batches of 32. This size ended up being an ideal size. Anything smaller was quicker but learned less/slower, which needed more epochs to get to the same result. The overall loss was then calculated. The reconstruction loss used MSE between the inputted image and the outputted reconstructed image. The total loss was the sum of this and the quantisation loss defined in section 4. An Adam optimiser was used with a learning rate of 0.001. The Adam Optimiser provided adaptive learning rates, providing better training of the model and more effectively finding lower and lower loss. 
 
+### Results
+Each epoch, the loss and the SSIM scores were calculated and plotted after training was done. Additionaly the input image and the reconstructed image for the epochs were also visualised to track progress.
 
+After 1 epoch:
 
+![alt text](./Resources/epoch1/recon_imag_0.png "Title")
+![alt text](./Resources/epoch1/recon_imag_1.png "Title")
+![alt text](./Resources/epoch1/recon_imag_2.png "Title")
 
+After 5 epoch:
 
+![alt text](./Resources/epoch5/recon_imag_0.png "Title")
+![alt text](./Resources/epoch5/recon_imag_1.png "Title")
+![alt text](./Resources/epoch5/recon_imag_2.png "Title")
+After 10 epoch:
 
+![alt text](./Resources/epoch10/recon_imag_0.png "Title")
+![alt text](./Resources/epoch10/recon_imag_1.png "Title")
+![alt text](./Resources/epoch10/recon_imag_2.png "Title")
 
+After 20 epoch:
 
+![alt text](./Resources/epoch20/recon_imag_0.png "Title")
+![alt text](./Resources/epoch20/recon_imag_1.png "Title")
+![alt text](./Resources/epoch20/recon_imag_2.png "Title")
 
+The SSIM Scores:
+![alt text](./Resources/train/ssim_epoch_losses.png "Title")
 
+The SSIM values quickly passed this minimum of 0.6 around 3 epochs. With it steadily increasing to above 0.7. This quick initial learning suggest that the VQ-VAE learns key features very quickly but takes longer to fine tune. The validation and training outputs follow each other closely, meaning the model is not overfitting to the training set. 
 
+The loss plot can also be plotted:
+![alt text](./Resources/train/vqvae_epoch_losses.png "Title")
 
-
-Key parameters   
-Training duration, epochs, checkpoints  
-Training loss plot   
-SSIM plot  
+The loss values are quite low indicating that the model has performed well to reconstruct the images. 
 ## 6. Testing and Results
 
 ## 7. How to Run
