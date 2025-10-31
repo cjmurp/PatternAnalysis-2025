@@ -246,15 +246,14 @@ To evaluate the model properly, code was created in predict.py. The SSIM scores 
 ![alt text](./Resources/test/test_eval/test_ssim_curve.png "Title")
 With 
 
-**Max SSIM:** 
-**Min SSIM:** 
-**Average SSIM:** 
+**Max SSIM:** 0.8261  
+**Min SSIM:** 0.6458  
+**Average SSIM:** 0.7422  
 
 All values fit above the minimum SSIM value of 0.6, providing "Reasonably clear" images. There does seem to be some variance in the outputs suggesting that the model does not perform as consistently as desired, possibly due to the model performing well with input images that are similar to what it was trained on and struggling with the images that differ the most to the training set. The model still generalises quite well to keep the minimum scores above the threshold though.
 
 Some Visualisations of the test set can be seen:
 
-IMAGES
 ![alt text](./Resources/test/test_eval/reconstruction_0.png "Title")
 ![alt text](./Resources/test/test_eval/reconstruction_1.png "Title")
 ![alt text](./Resources/test/test_eval/reconstruction_2.png "Title")
