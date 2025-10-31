@@ -299,6 +299,6 @@ This will plot the SSIM and loss scores and visualise some reconstructions. This
 
 ## References
 - - - - -
-[1] Explaining AI, (2023, September 22) VQ-VAE https://github.com/explainingai-code/VQVAE-Pytorch.git
-[2] Patel, S. (2019, June 4). All you need to know about Variational AutoEncoder. Retrieved from BayesLabs Blog: https://blog.bayeslabs.co/2019/06/04/All-you-need-to-know-about-Vae.html#Reparameterization
-[3] Snell, C. (2021, Febuary 9). Understanding VQ-VAE (DALL-E Explained Pt. 1). Retrieved from ML@B Blog: https://mlberkeley.substack.com/p/vq-vae
+[1] Explaining AI, (2023, September 22) VQ-VAE https://github.com/explainingai-code/VQVAE-Pytorch.git  
+[2] Patel, S. (2019, June 4). All you need to know about Variational AutoEncoder. Retrieved from BayesLabs Blog: https://blog.bayeslabs.co/2019/06/04/All-you-need-to-know-about-Vae.html#Reparameterization  
+[3] Snell, C. (2021, Febuary 9). Understanding VQ-VAE (DALL-E Explained Pt. 1). Retrieved from ML@B Blog: https://mlberkeley.substack.com/p/vq-vae  
