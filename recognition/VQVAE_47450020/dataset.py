@@ -68,3 +68,15 @@ class HipMRIProstateDataset(Dataset):
             img = self.transform(img)
 
         return img
+
+if __name__ == "__main__":
+
+    path = "./../../../keras_slices_data/keras_slices_validate"
+
+    data = HipMRIProstateDataset(root_dir=path, transform=transforms.ToTensor())
+
+    dataloader = DataLoader(data, batch_size=1, shuffle=True)
+    for batch in dataloader:
+        print(batch.shape)
+        print(len(dataloader))
+        break

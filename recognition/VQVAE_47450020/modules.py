@@ -1,4 +1,3 @@
-# vqvae.py
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -158,34 +157,10 @@ class VectorQuantizer(nn.Module):
 
         # quantized vectors
         quantized = torch.matmul(encodings, embedding_weight)  # (N, D)
-        quantized = quantized.view(*input_shape[0:2], *input_shape[2:]).permute(0, 1, 2, 3)  # intermediate but we'll re-format below
+        quantized = quantized.view(*input_shape[0:2], *input_shape[2:]).permute(0, 1, 2, 3)
         # Rebuild to (B, D, H, W)
         quantized = quantized.view(input_shape[0], input_shape[2], input_shape[3], self.embedding_dim).permute(0, 3, 1, 2).contiguous()
 
-        # if self.use_ema:
-        #     # EMA updates (only during training)
-        #     if self.training:
-        #         # Update cluster size
-        #         dw = torch.sum(encodings, dim=0)  # (K,)
-        #         self.ema_cluster_size = self.ema_cluster_size * self.ema_decay + (1 - self.ema_decay) * dw
-        #
-        #         # Update weights
-        #         dw_weight = torch.matmul(encodings.t(), flat_input)  # (K, D)
-        #         self.ema_w = self.ema_w * self.ema_decay + (1 - self.ema_decay) * dw_weight
-        #
-        #         # Laplace smoothing
-        #         n = torch.sum(self.ema_cluster_size)
-        #         cluster_size = ((self.ema_cluster_size + self.eps) / (n + self.num_embeddings * self.eps)) * n
-        #
-        #         # normalize ema_w to get new embeddings
-        #         normalized_weight = self.ema_w / cluster_size.unsqueeze(1)
-        #         self.embedding.weight.data.copy_(normalized_weight)
-        #
-        #     # commitment loss (L2 between encoder output and quantized)
-        #     e_latent_loss = F.mse_loss(quantized.detach(), inputs)
-        #     loss = self.commitment_cost * e_latent_loss
-        # else:
-        # standard VQ: embedding loss + commitment loss
         # embedding loss: move embedding towards encoder output (stop gradient on input)
         embedding_loss = F.mse_loss(quantized, inputs.detach())
         commitment_loss = F.mse_loss(quantized.detach(), inputs)
@@ -300,7 +275,6 @@ class VQVAE(nn.Module):
                                activation=activation,
                                num_residual_blocks=num_residual_blocks)
         # ensure embedding dim matches encoder channels (we project to embedding_dim)
-        # compute encoder final channel output (mirror of Encoder)
         # compute encoder final channel output: MUST match the output of the Encoder's self.downs
         in_ch = hidden_channels
         for i in range(n_down):
@@ -343,9 +317,6 @@ class VQVAE(nn.Module):
 
         # total loss
         total_loss = recon_loss + vq_loss
-
-        # Commitment loss
-        # Image
 
         logs = {
             "commitment_loss": commit_loss.detach(),
