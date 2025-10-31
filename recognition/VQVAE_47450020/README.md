@@ -27,6 +27,8 @@ latent space, but they tend to produce blurred images due to their continuous la
 
 ![alt text](./Resources/VAE_image.png "Title")
 
+image sourced from [2]
+
 Vector Quantised Variational Encoders (VQ-VAEs) introduce a discrete latent space through the use of a codebook 
 (embedding dictionary) of learned latent vectors. The encoder outputs are quantised by mapping the encoder output
 to the "closest" vector in the codebook. The encoder, using a convolutional neural network (CNN), reduces the input
@@ -49,6 +51,8 @@ passes the gradients from the decoder directly back to the encoder. This is repr
 forward pass marked as the red arrow. This allows the reconstruction loss to be used to tune the model.
 
 ![alt text](./Resources/VQ_VAE_image.jpg "Title")
+
+image sourced from [3]
 
 Since there is this pass-through, there is now no connection to the embedding vectors to tune them during backpropagation.
 This is where the Codebook loss and commitment loss are used. The codebook loss is used to bring the embedding vectors
@@ -167,7 +171,7 @@ upsampling layers to progressively reconstruct the spatial resolution. This outp
 
 
 ### Overall Model
-The VQ-VAE model was adapted from **REFERENCE**
+The VQ-VAE model was adapted from [1]
 
 The overall model uses the above components with a convolution layer on either side of the quantizer to ensure channels and dimensions match:
 ```
@@ -295,3 +299,6 @@ This will plot the SSIM and loss scores and visualise some reconstructions. This
 
 ## References
 - - - - -
+[1] Explaining AI, (2023, September 22) VQ-VAE https://github.com/explainingai-code/VQVAE-Pytorch.git
+[2] Patel, S. (2019, June 4). All you need to know about Variational AutoEncoder. Retrieved from BayesLabs Blog: https://blog.bayeslabs.co/2019/06/04/All-you-need-to-know-about-Vae.html#Reparameterization
+[3] Snell, C. (2021, Febuary 9). Understanding VQ-VAE (DALL-E Explained Pt. 1). Retrieved from ML@B Blog: https://mlberkeley.substack.com/p/vq-vae
