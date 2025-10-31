@@ -263,16 +263,35 @@ Visualisation of the codebook embedding:
 ![alt text](./Resources/test/codebook_vis/codebook_map_0.png "Title")
 
 ## 7. How to Run
-Install and set up the environment  
-Dataset setup  
-training command  
-testing command  
+
 ### Dependencies
+| Dependency    | Version |
+|---------------|---------|
+| Python        | 3.9.23  |
+| PyTorch       | 2.8.0   |
+| Torchvision   | 0.23.0  |
+| NumPy         |  1.26.3 |
+| Matplotlib    | 3.9.4   |
+|  tqdm         |  4.67.1 |
+| torchmetrics  |  1.8.2  |
+|  nibabel      |  5.3.2  |
 
-INSTALL
-### Run
 
-
+These can be installed by:
+```
+pip install pytorch torchvision numpy matplotlib tqdm torchmetrics nibabel
+```
+### Running 
+The results found can be recreated by running the attached files. Initially the model needs to be trained by running
+```
+python train.py
+```
+This will save checkpoint for each epoch, saving the respective model, and output visualisations of the training. Image reconstructions for each epoch is also visualised and saved.
+The model can then be evaluated by running:
+```
+python predict.py
+```
+This will plot the SSIM and loss scores and visualise some reconstructions. This will also look at the codebook embeddings and visualise them. All images are saved.
 
 ## References
 - - - - -
