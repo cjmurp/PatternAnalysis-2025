@@ -239,15 +239,40 @@ The SSIM values quickly passed this minimum of 0.6 around 3 epochs. With it stea
 The loss plot can also be plotted:
 ![alt text](./Resources/train/vqvae_epoch_losses.png "Title")
 
-The loss values are quite low indicating that the model has performed well to reconstruct the images. 
+The loss values are quite low, indicating that the model has performed well in reconstructing the images. 
 ## 6. Testing and Results
+
+To evaluate the model properly, code was created in predict.py. The SSIM scores for all of the images can be plotted to visualise the variance:
+![alt text](./Resources/test/test_eval/test_ssim_curve.png "Title")
+With 
+
+**Max SSIM:** 
+**Min SSIM:** 
+**Average SSIM:** 
+
+All values fit above the minimum SSIM value of 0.6, providing "Reasonably clear" images. There does seem to be some variance in the outputs suggesting that the model does not perform as consistently as desired, possibly due to the model performing well with input images that are similar to what it was trained on and struggling with the images that differ the most to the training set. The model still generalises quite well to keep the minimum scores above the threshold though.
+
+Some Visualisations of the test set can be seen:
+
+IMAGES
+![alt text](./Resources/test/test_eval/reconstruction_0.png "Title")
+![alt text](./Resources/test/test_eval/reconstruction_1.png "Title")
+![alt text](./Resources/test/test_eval/reconstruction_2.png "Title")
+![alt text](./Resources/test/test_eval/reconstruction_3.png "Title")
+
+Visualisation of the codebook embedding:
+![alt text](./Resources/test/codebook_vis/codebook_map_0.png "Title")
 
 ## 7. How to Run
 Install and set up the environment  
 Dataset setup  
 training command  
 testing command  
-## Dependencies
+### Dependencies
+
+INSTALL
+### Run
+
 
 
 ## References
