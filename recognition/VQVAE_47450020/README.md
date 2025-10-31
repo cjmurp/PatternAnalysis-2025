@@ -59,9 +59,40 @@ fluctuating between different code vectors, bringing stability to the training. 
 "stationary" and the encoded points are brought closer to that point. 
 
 ## 3. Dataset and Pre-Processing
-Describe the dataset and how to access and load  
-What pre-processing is used?  
-Splitting training, validation and test  
+The HipMRI Prostate 2d image slice dataset was used for this project. The data set consists of greyscale images that are stored in nifti format. 
+A custom DataSet class was created to load these images and convert them to standard images with values ranging from 0 to 255. This custom
+DataSet class can be seen in predict.py. The custom class is set up so that these loaded images are processed with a specified transform. 
+By default, this transform just converts the image to a Tensor for later processing. 
+
+For better performance, a specific set of transforms was set. 
+
+``` python
+transform = transforms.Compose([
+        transforms.Resize((256, 128)),
+        transforms.Grayscale(num_output_channels=1),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,))
+    ])
+```
+The specified transform ensures all images are a consistent size to prevent sizing issues in the model. It also ensures that the image is grayscale,
+ensuring there is only one output channel. This is again to keep dimensions consistent for the model. It is then converted to a Tensor and then immediately
+normalised. It is being normalised to the range of -1 to 1. This improves stability and works very well with Tanh activation function. 
+
+### Datasplit
+The overall data has been split into distinct groups to properly train and evaluate the model. The split is:
+
+**train:** 11460 (90.5%)  
+**test:** 540 (4.3%)  
+**validate:** 660 (5.2%)  
+**Total:** 12660  
+
+This split is the standard split that is present in the keras_slices_data for the HipMRI Prostate study. This split is desirable. A large training set
+is needed to ensure the model learns the appropriate features and does not over generalise to the small data set. The percentage of 90 percent fits
+this purpose. A validate set was used while training to ensure that the model was not generalising to the training set. This means SSIM and loss 
+can be plotted for the training and validate set for each epoch to appropriately monitor progress. Finally, the test set needs to be seperate again to
+ensure the model has not generalised to the training set and can output adequete results for unseen data. Both the validate and test set do not need to
+be as big as the training set, leaving 10 percent of the data between them. This split was inputted into three seperate dataloaders to be used by the model.
+
 ## 4. Model Architecture
 Describe VAQVAE  
 Layers and breakdown  
